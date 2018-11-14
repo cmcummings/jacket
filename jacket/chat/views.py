@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
+from django.contrib.auth import logout as session_logout
 import random, os
 
 quotes = ['What you do from here on won\'t serve any purpose. You\'ll never see the bigger picture, and it\'s all your own fault.',
@@ -8,15 +9,14 @@ pw = "megumin"
 
 def home(request):
 	context = {}
-	try:
-        # If valid user, load home
-		if request.session['user_id'] is not None:
-			context['user'] = {
-				'id': request.session['user_id'],
-				'username': request.session['user_name']
-			}
-			return render(request, 'chat/home.html', context)
-	except KeyError:
+    # If valid user, load home
+	if check_login(request):
+		context['user'] = {
+			'id': request.session['user_id'],
+			'username': request.session['user_name']
+		}
+		return render(request, 'chat/home.html', context)
+	else:
 		# If not, load login splash
 		context['quote'] = gen_quote()
 		return render(request, 'chat/auth.html', context)
@@ -32,12 +32,12 @@ def chat(request):
     return render(request, 'chat/rooms.html')
 
 def login_view(request):
-	if request.session['auth'] == False or request.session['user_id'] is not None:
+	if check_login(request):
 		return redirect('home')
 	return render(request, 'chat/login.html')
 
 def login_user(request):
-	if request.session['user_id'] is not None:
+	if check_login(request):
 		return redirect('home')
 	if request.POST:
 		print('attempted login')
@@ -52,7 +52,7 @@ def login_user(request):
 			return redirect('login')
 
 def login_anon(request):
-	if request.session['user_id'] is not None:
+	if check_login(request):
 		return redirect('home')
 	if request.POST:
 		print('attempted anon login')
@@ -61,16 +61,32 @@ def login_anon(request):
 		redirect('home')
 
 def auth(request):
-	if request.session['auth'] == True:
-		return redirect('login')
-
 	if request.POST:
 		print('attempted auth')
 		# print(get_site_pw())
 		if request.POST.get('pw') == pw:
 			request.session['auth'] = True
+			print('auth succ')
 			return redirect('login')
 	return redirect('home')
+
+def logout(request):
+	session_logout(request)
+	return redirect('home')
+
+def check_auth(request):
+	try:
+		if request.session['auth'] == True:
+			return True
+	except KeyError:
+		return False
+
+def check_login(request):
+	try:
+		if request.session['user_id'] is not None:
+			return True
+	except KeyError:
+		return False
 
 def get_site_pw():
 	dir_path = os.path.dirname(os.path.realpath(__file__))

@@ -1,3 +1,6 @@
-<header>
-    
+<header class="text-light">
+	<p>Logged in as  <span class="text-info">{{ user.username }}</span>
+		(<a class="text-warning" href="{% url 'logout' %}">Logout</a>)
+		</p>
+
 </header>

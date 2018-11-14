@@ -1,0 +1,40 @@
+{% extends 'chat/base.html' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+
+<main>
+
+	<div id="auth-main">
+		<h2 class="text-light text-center">jacket</h2>
+		<h5 class="d-block text-center text-warning">login</h5>
+		<form class="text-center my-4" action="{% url 'login-user' %}" method="post">
+			{% csrf_token %}
+			<input class="d-block mx-auto bg-pitch-dark border border-light p-2
+				text-light text-center my-2" type="text" name="username"
+				placeholder="username">
+
+			<input class="d-block mx-auto bg-pitch-dark border border-light p-2
+				text-light text-center my-2" type="password" name="password"
+				placeholder="password">
+
+			<input class="d-block mx-auto bg-pitch-dark border border-light p-2
+				text-light text-center my-2" type="submit" value="log in">
+		</form>
+		<form class="text-center my-4" action="{% url 'login-anon' %}" method="post">
+			<p class="d-inline text-light">or login as an</p>
+			<input class="m-0 p-0 d-inline bg-pitch-dark border-0 text-warning" type="submit"
+				value="anonymous user">
+		</form>
+
+		{% if quote %}
+		<p class="text-light text-center">{{ quote }}</p>
+		{% endif %}
+	</div>
+
+</main>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

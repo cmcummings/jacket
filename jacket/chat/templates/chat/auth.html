@@ -1,0 +1,28 @@
+{% extends 'chat/base.html' %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+
+<main>
+
+	<div id="auth-main">
+		<h2 class="text-light text-center">jacket</h2>
+		<form class="text-center my-4" action="{% url 'auth' %}" method="post">
+			{% csrf_token %}
+			<input class="mx-auto bg-pitch-dark border border-light p-2
+				text-light text-center" type="password" name="pw" placeholder="">
+
+			<input class="mx-auto bg-pitch-dark border border-light p-2
+				text-light text-center" type="submit" value="enter">
+		</form>
+		{% if quote %}
+		<p class="text-light text-center">{{ quote }}</p>
+		{% endif %}
+	</div>
+
+</main>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

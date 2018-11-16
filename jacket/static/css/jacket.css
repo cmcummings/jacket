@@ -10,3 +10,7 @@
 	left: 50%;
 	margin-left: -200px;
 }
+
+.subforum:hover {
+	background-color: rgb(25, 25, 25);
+}

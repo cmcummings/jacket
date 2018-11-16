@@ -4,4 +4,10 @@
 		Logged in as <span class="text-info">{{ user.username }}</span>
 		(<a class="text-warning" href="{% url 'logout' %}">Logout</a>)
 	</p>
+	<p class="d-inline ml-5">
+		[
+		<a class="text-warning" href="{% url 'home' %}">Home</a> /
+		<a class="text-warning" href="{% url 'forum' %}">Forum</a>
+		]
+	</p>
 </header>

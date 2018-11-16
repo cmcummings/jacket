@@ -2,4 +2,26 @@
 
 {% block content %}
 
+<main class="p-5 text-light">
+	{% for category, subs in subforums.items %}
+	<div class="bg-pitch-dark border border-grey pt-3 pl-3 pb-2">
+		<h2 class="text-light">{{ category }}</h2>
+	</div>
+	{% for key, subforum in subs.items %}
+	<a class="n-h-u d-block subforum bg-ap-dark border border-grey p-3 pl-5" href="{% url 'subforum' %}?s={{ key }}">
+		<div class="d-block">
+			<h2 class="d-inline text-light">{{ subforum.name }}</h2>
+				{% if subforum.nsfw == True %}
+				<span class="d-inline badge badge-pill badge-danger">NSFW</span>
+				{% endif %}
+			<p class="d-inline text-light m-0">{{ subforum.description }}</p>
+		</div>
+		<div class="d-block">
+			<p class="text-secondary m-0">Threads: <span class="text-light">{{ subforum.thread_count }}</span></p>
+		</div>
+	</a>
+	{% endfor %}
+	{% endfor %}
+</main>
+
 {% endblock %}

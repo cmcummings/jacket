@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from general.models import gen_key as gen_room_key
-import random
 
 # Chat models
 class Room(models.Model):

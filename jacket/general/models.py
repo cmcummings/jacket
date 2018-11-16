@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+import random
 
 # Generates a string of 10 random characters
 # For some reason Django won't let me change the name of this function,

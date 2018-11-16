@@ -22,11 +22,14 @@
 			<input class="d-block mx-auto bg-pitch-dark border border-light p-2
 				text-light text-center my-2" type="submit" value="log in">
 		</form>
+		{% if anon %}
 		<form class="text-center my-4" action="{% url 'login-anon' %}" method="post">
+			{% csrf_token %}
 			<p class="d-inline text-light">or login as an</p>
 			<input class="m-0 p-0 d-inline bg-pitch-dark border-0 text-warning" type="submit"
 				value="anonymous user">
 		</form>
+		{% endif %}
 
 		{% if quote %}
 		<p class="text-light text-center">{{ quote }}</p>

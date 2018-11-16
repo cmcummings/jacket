@@ -5,6 +5,30 @@
 {% block content %}
 
 <main class="text-light">
+	<h1 class="text-light text-center mt-2" style="font-size:50px">J A C K E T</h1>
+	<div class="list-group">
+		<div class="list-group-item container bg-ap-dark p-3 border border-grey rounded">
+			<div class="text-center">
+				<h2 class="text-warning underline">Announcements</h2>
+				{% if announcements %}
+				<div class="p-2">
+				{% for date, content in announcements.items %}
+					<p class="">
+						<span class="text-secondary">{{ date|date:"M. j, Y" }}</span>:
+						{{ content }}
+					</p>
+					{% endfor %}
+				</div>
+				{% else %}
+				<p>Announcements unavailable.</p>
+				{% endif %}
+			</div>
+		</div>
+		<div class="list-group-item container bg-ap-dark p-3 border border-grey rounded">
+			<div class="text-center">
+			</div>
+		</div>
+	</div>
 </main>
 
 {% endblock %}

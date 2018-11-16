@@ -1,6 +1,7 @@
-<header class="text-light">
-	<p>Logged in as  <span class="text-info">{{ user.username }}</span>
+<header class="sticky-top text-light bg-ap-dark m-0 p-1">
+	<h5 class="d-inline text-light mx-2">JACKET</h5>
+	<p class="d-inline">
+		Logged in as <span class="text-info">{{ user.username }}</span>
 		(<a class="text-warning" href="{% url 'logout' %}">Logout</a>)
-		</p>
-
+	</p>
 </header>

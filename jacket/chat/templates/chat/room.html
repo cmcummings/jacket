@@ -1,5 +1,131 @@
 {% extends 'chat/base.html' %}
+{% load static %}
 
 {% block content %}
+
+<main class="container-fluid row text-light">
+	<div class="col-sm-2">
+
+	</div>
+	<div class="col" style="height: 100%;">
+		<!-- Title bar -->
+		<div class="p-2 my-2 border-bottom border-warning">
+			<h5 class="text-warning">{{ room.name }}</h5>
+		</div>
+		<!-- Messages -->
+		<div id="messages" class="p-3" style="max-height: 80vh; overflow: auto;">
+			{% for id, message in messages.items %}
+			<div class="border-left px-2 pl-4 mt-3 position-relative" style="bottom: 10px;">
+				<h5 class="d-inline {% if message.author.is_user %}text-info{% else %}text-light{% endif %}">
+					{{ message.author.username }}
+				</h5>
+				<small class="d-inline text-secondary">({{ message.date }})</small>
+				<pre class="mt-3 text-light">{{ message.content }}</pre>
+			</div>
+			{% endfor %}
+		</div>
+		<!-- Add message -->
+		<div class="border border-warning">
+			<form id="send-message" action="" method="post">
+				{% csrf_token %}
+				<p class="d-inline ml-3">></p>
+				<input class="d-inline-block p-2 text-light bg-pitch-dark
+					border-0 border-right border-light" id="msg-content" style="width: 90%" type="text" name="content">
+				<!-- Enter to send -->
+			</form>
+			<script>
+				function getCookie(name) {
+					var cookieValue = null;
+					if (document.cookie && document.cookie !== '') {
+						var cookies = document.cookie.split(';');
+						for (var i = 0; i < cookies.length; i++) {
+							var cookie = jQuery.trim(cookies[i]);
+							// Does this cookie string begin with the name we want?
+							if (cookie.substring(0, name.length + 1) === (name + '=')) {
+								cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+								break;
+							}
+						}
+					}
+					return cookieValue;
+				}
+
+				$(function() {
+					$.ajaxSetup({
+						headers: {
+							"X-CSRFToken": getCookie("csrftoken")
+						}
+					});
+				});
+
+				function update() {
+					$.ajax({
+						type: 'POST',
+						url: '{% url 'get-messages' %}',
+						data: {
+							'room_key': '{{ room.key }}'
+						},
+						dataType: 'json',
+						success: function(data) {
+							messages = data.messages;
+							$("#messages").empty();
+							final = ``;
+							$.each(messages, function(key, message) {
+								if (message.author.is_user) {
+									final += `
+								<div class="border-left px-2 pl-4 mt-3 position-relative" style="bottom: 10px;">
+									<h5 class="d-inline text-info">
+										` + message.author.username +
+										`
+									</h5>
+									<small class="d-inline text-secondary">(` + message.date + `)</small>
+									<pre class="mt-3 text-light">` + message.content + `</pre>
+								</div>
+								`
+								} else {
+									final += `
+									<div class="border-left px-2 pl-4 mt-3 position-relative" style="bottom: 10px;">
+									<h5 class="d-inline text-light">
+										` + message.author.username +
+										`
+									</h5>
+									<small class="d-inline text-secondary">(` + message.date + `)</small>
+									<pre class="mt-3 text-light">` + message.content + `</pre>
+									</div>
+									`
+								}
+							})
+							$("#messages").html(final);
+							$("#messages").scrollTop($("#messages").scrollHeight);
+						}
+					});
+				}
+
+				// this is the id of the form
+				$("#send-message").submit(function(e) {
+					var content = $("#msg-content").val() // Get message contents
+					$("#msg-content").val('') // Reset text input
+
+					$.ajax({
+						type: 'POST',
+						url: '{% url 'send-message' %}',
+						data: {
+							'room_key': '{{ room.key }}',
+							'content': content
+						},
+						dataType: 'json',
+						success: function(data) {
+							update()
+						},
+						failure: function(data) {
+							alert('Failed to send message.')
+						}
+					});
+					e.preventDefault();
+				});
+			</script>
+		</div>
+	</div>
+</main>
 
 {% endblock %}

@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import logout as session_logout
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from .models import Room, Message, Announcement
 import random, os
 
 quotes = ['What you do from here on won\'t serve any purpose. You\'ll never see the bigger picture, and it\'s all your own fault.',
@@ -11,10 +14,9 @@ def home(request):
 	context = {}
     # If valid user, load home
 	if check_login(request):
-		context['user'] = {
-			'id': request.session['user_id'],
-			'username': request.session['user_name']
-		}
+		load_user_context(request, context)
+		load_announcement_context(request, context)
+
 		return render(request, 'chat/home.html', context)
 	else:
 		# If not, load login splash
@@ -22,14 +24,69 @@ def home(request):
 		return render(request, 'chat/auth.html', context)
 
 def chat(request):
-    # If GET (id), load chatroom
-    if request.GET.get("rm"):
-        print(request.GET.get("rm"))
-        # TODO Load chat context
-        return render(request, 'chat/room.html')
+	# If GET (id), load chatroom
+	requested_room_key = request.GET.get("rm")
+	if requested_room_key is not None:
+		try:
+			room = Room.objects.get(key=requested_room_key)
+			# Load messages into context
+			context = {
+				'room': {
+					'key': room.key,
+					'name': room.name
+				},
+				'messages': {}
+			}
+			messages = room.message_set.all()
+			# Load messages
+			for message in messages:
+				context['messages'][message.id] = message.__dict__
+				context['messages'][message.id]['author'] = {
+					'username': message.author.username,
+					'is_user': message.author.id == request.session['user_id']
+				}
+			# Render chatroom
+			return render(request, 'chat/room.html', context)
+		except Room.DoesNotExist:
+			return redirect('chat') # Redirect to all open chatrooms
 
     # If no GET(id) or invalid GET(id), load open chatrooms
-    return render(request, 'chat/rooms.html')
+	return render(request, 'chat/rooms.html')
+
+def send_message(request):
+	if request.POST:
+		data = {}
+
+		room = Room.objects.get(key=request.POST.get('room_key'))
+		content = request.POST.get('content')
+		message = Message(content=content, room=room)
+		message.author = User.objects.get(id=request.session['user_id'])
+
+		message.save()
+		data['msg'] = 'succ'
+		return JsonResponse(data)
+
+def get_messages(request):
+	if request.POST:
+		data = {
+			'messages': {}
+		}
+
+		room = Room.objects.get(key=request.POST.get('room_key'))
+		messages = room.message_set.all()
+
+		for message in messages:
+			data['messages'][message.id] = {
+				'content': message.content,
+				'date': message.date,
+				'author': {
+					'username': message.author.username,
+					'is_user': message.author.id == request.session['user_id']
+				}
+			}
+
+		print(data)
+		return JsonResponse(data)
 
 def login_view(request):
 	if check_login(request):
@@ -56,9 +113,9 @@ def login_anon(request):
 		return redirect('home')
 	if request.POST:
 		print('attempted anon login')
-		request.session['anon'] = True
+		request.session['user_id'] = 0
 		request.session['user_name'] = 'Anonymous'
-		redirect('home')
+		return redirect('home')
 
 def auth(request):
 	if request.POST:
@@ -87,6 +144,18 @@ def check_login(request):
 			return True
 	except KeyError:
 		return False
+
+def load_user_context(request, context):
+	context['user'] = {
+		'id': request.session['user_id'],
+		'username': request.session['user_name']
+	}
+
+def load_announcement_context(request, context):
+	announcements = Announcement.objects.all()
+	context['announcements'] = {}
+	for announcement in announcements:
+		context['announcements'][announcement.date] = announcement.content
 
 def get_site_pw():
 	dir_path = os.path.dirname(os.path.realpath(__file__))

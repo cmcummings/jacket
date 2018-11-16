@@ -1,7 +1,51 @@
 {% extends 'general/base.html' %}
+{% load static %}
 
-<main class="p-5 text-light">
+{% block content %}
 
+<main class="p-5 text-light container-fluid">
 
+	<div class="row">
+		<div class="col-9">
+			<div class="d-block">
+				<h1 class="text-light">Threads</h1>
+			</div>
+			{% for key, thread in threads.items %}
+
+			<a class="n-h-u d-block box-a bg-ap-dark border border-light-grey box-a py-3 pl-5" href="{% url 'thread' %}?t={{ key }}">
+				<div class="d-block">
+					<h2 class="d-inline text-light">{{ thread.title }}</h2>
+					{% if thread.nsfw == True %}
+					<span class="d-inline badge badge-pill badge-danger">NSFW</span>
+					{% endif %}
+					<!-- <p class="d-inline text-light m-0">{{ thread.content }}</p> -->
+				</div>
+				<div class="d-block">
+					<p class="d-inline text-secondary">
+						By <span class="text-light">{{ thread.author.username }}</span>
+						at {{ thread.date }}
+					</p>
+				</div>
+			</a>
+
+			{% endfor %}
+		</div>
+		<div class="col-3">
+			<div class="bg-ap-dark border border-grey p-3">
+				<h2 class="text-warning text-center underline">{{ subforum.name }}</h2>
+				<p class="text-light text-center">{{ subforum.description }}</p>
+				<h5 class="text-light underline">Site Staff</h5>
+				<ul>
+					{% for id, username in staff.items %}
+					<li>
+						{{ username }}
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
 
 </main>
+
+{% endblock %}

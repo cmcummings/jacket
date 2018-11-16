@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from general.views import load_user_context, check_login
+from general.views import load_user_context, check_login, load_staff_list_context
 from .models import Subforum, Thread, Reply
 
 def forum(request):
@@ -37,6 +37,8 @@ def subforum(request):
 
 	context = {}
 	load_user_context(request, context)
+	load_staff_list_context(context)
+	print(context['staff'])
 
 	s = request.GET.get('s')
 	# Redirect to forum if no sub requested
@@ -57,6 +59,10 @@ def subforum(request):
 					'username': thread.author.username,
 				}
 			}
+		context['subforum'] = {
+			'name': subforum.name,
+			'description': subforum.description
+		}
 	except Subforum.DoesNotExist:
 		# Redirect to forum is sub requested does not exist
 		return redirect('forum')

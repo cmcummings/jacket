@@ -8,7 +8,7 @@
 		<h2 class="text-light">{{ category }}</h2>
 	</div>
 	{% for key, subforum in subs.items %}
-	<a class="n-h-u d-block subforum bg-ap-dark border border-grey p-3 pl-5" href="{% url 'subforum' %}?s={{ key }}">
+	<a class="n-h-u d-block box-a bg-ap-dark border border-grey p-3 pl-5" href="{% url 'subforum' %}?s={{ key }}">
 		<div class="d-block">
 			<h2 class="d-inline text-light">{{ subforum.name }}</h2>
 				{% if subforum.nsfw == True %}

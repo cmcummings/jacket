@@ -14,7 +14,7 @@ def home(request):
     # If valid user, load home
 	if check_login(request):
 		load_user_context(request, context)
-		load_announcement_context(request, context)
+		load_announcement_context(context)
 
 		return render(request, 'general/home.html', context)
 	else:
@@ -85,11 +85,17 @@ def load_user_context(request, context):
 		'username': request.session['user_name']
 	}
 
-def load_announcement_context(request, context):
+def load_announcement_context(context):
 	announcements = Announcement.objects.all()
 	context['announcements'] = {}
 	for announcement in announcements:
 		context['announcements'][announcement.date] = announcement.content
+
+def load_staff_list_context(context):
+	staff = User.objects.filter(is_staff=True)
+	context['staff'] = {}
+	for user in staff:
+		context['staff'][user.id] = user.username
 
 def get_site_pw():
 	dir_path = os.path.dirname(os.path.realpath(__file__))

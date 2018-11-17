@@ -1,0 +1,61 @@
+{% extends 'general/base.html' %}
+
+{% block title %}{{ thread.title }} - jacket{% endblock %}
+
+{% block content %}
+
+<main class="container-fluid p-5 text-light container-fluid">
+	<!-- Thread -->
+	<div class="d-block">
+		<div class="row bg-ap-dark border border-grey py-3">
+			<div class="px-3 border-right m-1 border-light-grey">
+				<p class="text-center mb-2" style="font-size: 20px">
+					<a class="{% if thread.author.is_staff %}text-danger{% else %}text-light{% endif %} n-h-u"
+						href="{% url 'user' %}?id={{ thread.author.id }}">
+						{{ thread.author.username }}
+					</a>
+				</p>
+				<a class="d-block" href="{% url 'user' %}?id={{ thread.author.id }}">
+					<img class="border border-light-grey" width=175px height=175px src="{{ thread.author.avatar }}">
+				</a>
+				{% if thread.author.is_staff %}
+				<span class="d-block badge-pill badge-danger text-center">Admin</span>
+				{% endif %}
+				<p class="text-secondary text-center mt-3 mb-1">Total Posts: <span class="text-light">{{ thread.author.posts }}</span></p>
+			</div>
+			<div class="col">
+				<h1 class="text-light">{{ thread.title }}</h1>
+				<pre class="text-light pre-style">{{ thread.content }}</pre>
+				<p class="text-secondary text-right">{{ thread.date }}</p>
+			</div>
+		</div>
+	</div>
+	<!-- Replies -->
+	{% for key, reply in thread.replies.items %}
+	<div class="d-block" style="margin-left: 100px">
+		<div class="row bg-ap-dark border border-top-0 border-grey py-3">
+			<div class="px-3 border-right m-1 border-light-grey">
+				<p class="text-center mb-2" style="font-size: 20px">
+					<a class="{% if reply.author.is_staff %}text-danger{% else %}text-light{% endif %} n-h-u"
+						href="{% url 'user' %}?id={{ reply.author.id }}">
+						{{ reply.author.username }}
+					</a>
+				</p>
+				<a class="d-block" href="{% url 'user' %}?id={{ reply.author.id }}">
+					<img class="border border-light-grey" width=175px height=175px src="{{ reply.author.avatar }}">
+				</a>
+				{% if reply.author.is_staff %}
+				<span class="d-block badge-pill badge-danger text-center">Admin</span>
+				{% endif %}
+				<p class="text-secondary text-center mt-3 mb-1">Total Posts: <span class="text-light">{{ reply.author.posts }}</span></p>
+			</div>
+			<div class="col">
+				<pre class="text-light pre-style">{{ reply.content }}</pre>
+				<p class="text-secondary text-right">{{ reply.date }}</p>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</main>
+
+{% endblock %}

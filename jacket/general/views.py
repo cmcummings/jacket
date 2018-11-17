@@ -22,6 +22,9 @@ def home(request):
 		context['quote'] = gen_quote()
 		return render(request, 'general/auth.html', context)
 
+def user(request):
+	print('ok')
+
 def login_view(request):
 	if check_login(request):
 		return redirect('home')

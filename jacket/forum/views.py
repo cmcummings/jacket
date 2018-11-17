@@ -77,3 +77,41 @@ def thread(request):
 
 	context = {}
 	load_user_context(request, context)
+
+	t = request.GET.get('t')
+	# Redirect to forum if no thread requested
+	if t is None:
+		return redirect('forum')
+
+	try:
+		thread = Thread.objects.get(key=t)
+		context['thread'] = {
+			'title': thread.title,
+			'date': thread.date,
+			'content': thread.content,
+			'author': {
+				'id': thread.author.id,
+				'username': thread.author.username,
+				'is_staff': thread.author.is_staff,
+				'avatar': thread.author.profile.avatar.url,
+				'posts': thread.author.thread_set.count() + thread.author.reply_set.count()
+			},
+			'replies': {}
+		}
+		replies = thread.reply_set.all()
+		for reply in replies:
+			context['thread']['replies'][reply.key] = {
+				'date': reply.date,
+				'content': reply.content,
+				'author': {
+					'id': reply.author.id,
+					'username': reply.author.username,
+					'is_staff': reply.author.is_staff,
+					'avatar': reply.author.profile.avatar.url,
+					'posts': reply.author.thread_set.count() + reply.author.reply_set.count()
+				}
+			}
+	except Thread.DoesNotExist:
+		return redirect('forum')
+
+	return render(request, 'forum/thread.html', context)

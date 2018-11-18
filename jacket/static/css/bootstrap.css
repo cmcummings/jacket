@@ -5762,9 +5762,9 @@ button.close {
           flex-direction: column;
   width: 100%;
   pointer-events: auto;
-  background-color: #fff;
+  background-color: #111;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(50, 50, 50);
   border-radius: 5;
   outline: 0;
 }
@@ -5798,7 +5798,7 @@ button.close {
       -ms-flex-pack: justify;
           justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid #f7f7f9;
+  border-bottom: 1px solid rgb(50, 50, 50);
   border-top-left-radius: 5;
   border-top-right-radius: 5;
 }
@@ -5832,7 +5832,7 @@ button.close {
       -ms-flex-pack: end;
           justify-content: flex-end;
   padding: 1rem;
-  border-top: 1px solid #f7f7f9;
+  border-top: 1px solid rgb(50, 50, 50);
 }
 
 .modal-footer > :not(:first-child) {

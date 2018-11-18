@@ -1,4 +1,6 @@
 {% extends 'general/base.html' %}
+{% load static %}
+{% load filename %}
 
 {% block title %}{{ thread.title }} - jacket{% endblock %}
 
@@ -6,7 +8,7 @@
 
 <main class="container-fluid p-5 text-light container-fluid">
 	<!-- Thread -->
-	<div class="d-block">
+	<div id="{{ thread.key }}" class="d-block">
 		<div class="row bg-ap-dark border border-grey py-3">
 			<div class="px-3 border-right m-1 border-light-grey">
 				<p class="text-center mb-2" style="font-size: 20px">
@@ -16,7 +18,8 @@
 					</a>
 				</p>
 				<a class="d-block" href="{% url 'user' %}?id={{ thread.author.id }}">
-					<img class="border border-light-grey" width=175px height=175px src="{{ thread.author.avatar }}">
+					<img class="border border-light-grey" width=175px height=175px src="
+						{% if thread.author.avatar %}{{ thread.author.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}">
 				</a>
 				{% if thread.author.is_staff %}
 				<span class="d-block badge-pill badge-danger text-center">Admin</span>
@@ -24,15 +27,34 @@
 				<p class="text-secondary text-center mt-3 mb-1">Total Posts: <span class="text-light">{{ thread.author.posts }}</span></p>
 			</div>
 			<div class="col">
-				<h1 class="text-light">{{ thread.title }}</h1>
-				<pre class="text-light pre-style">{{ thread.content }}</pre>
-				<p class="text-secondary text-right">{{ thread.date }}</p>
+				<div class="d-inline-block border-bottom border-light-grey mb-2">
+					<h1 class="text-light" style="word-wrap:break-word; white-space: pre-wrap;">{{ thread.title }}</h1>
+					<p class="text-secondary mb-2">
+						<a class="text-warning" href="#{{ thread.key }}">#</a> {{ thread.date }}
+					</p>
+				</div>
+				<pre class="text-light pre-style">{{ thread.content }}</pre>{% if thread.file %}
+				<p>
+					[Image attached:
+						<a data-toggle="collapse" href="#image-{{ thread.key }}" role="button" aria-expanded="false"
+							aria-controls="image-{{ thread.key }}" class="text-warning">
+							{{ thread.file|filename }}</a> ({{ thread.file.width }}x{{ thread.file.height }})]
+				</p>
+				<div class="collapse" id="image-{{ thread.key }}">
+					<a href="{{ thread.file.url }}">
+						<img src="{{ thread.file.url }}">
+					</a>
+				</div>
+				{% endif %}
+				<p class="text-right">
+					[<a class="text-warning" href="#reply-form" data-toggle="modal" data-target="#reply-form">Reply</a>]
+				</p>
 			</div>
 		</div>
 	</div>
 	<!-- Replies -->
 	{% for key, reply in thread.replies.items %}
-	<div class="d-block" style="margin-left: 100px">
+	<div id="{{ reply.key }}" class="d-block" style="margin-left: 100px">
 		<div class="row bg-ap-dark border border-top-0 border-grey py-3">
 			<div class="px-3 border-right m-1 border-light-grey">
 				<p class="text-center mb-2" style="font-size: 20px">
@@ -42,7 +64,8 @@
 					</a>
 				</p>
 				<a class="d-block" href="{% url 'user' %}?id={{ reply.author.id }}">
-					<img class="border border-light-grey" width=175px height=175px src="{{ reply.author.avatar }}">
+					<img class="border border-light-grey" width=175px height=175px src="
+						{% if reply.author.avatar %}{{ reply.author.avatar.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}">
 				</a>
 				{% if reply.author.is_staff %}
 				<span class="d-block badge-pill badge-danger text-center">Admin</span>
@@ -50,12 +73,62 @@
 				<p class="text-secondary text-center mt-3 mb-1">Total Posts: <span class="text-light">{{ reply.author.posts }}</span></p>
 			</div>
 			<div class="col">
+				<div class="d-inline-block border-bottom border-light-grey mb-2">
+					<p class="text-secondary mb-2">{{ reply.date }}</p>
+				</div>
 				<pre class="text-light pre-style">{{ reply.content }}</pre>
-				<p class="text-secondary text-right">{{ reply.date }}</p>
+				{% if reply.file %}
+				<p>
+					[Image attached:
+						<a data-toggle="collapse" href="#image-{{ reply.key }}" role="button" aria-expanded="false"
+							aria-controls="image-{{ reply.key }}" class="text-warning">
+							{{ reply.file|filename }}</a> ({{ reply.file.width }}x{{ reply.file.height }})]
+				</p>
+				<div class="collapse" id="image-{{ reply.key }}">
+					<img src="{{ reply.file.url }}">
+				</div>
+				{% endif %}
+				<p class="text-right">
+					[<a class="text-warning" href="#reply-form" data-toggle="modal" data-target="#reply-form">Reply(OP)</a>]
+				</p>
 			</div>
 		</div>
 	</div>
 	{% endfor %}
+	<!-- Reply Form Modal -->
+	<div class="modal fade" id="reply-form" tabindex="-1" role="dialog" aria-labelledby="reply-form-label" aria-hidden="true">
+	 	<div class="modal-dialog modal-lg" role="document">
+	    	<div class="modal-content">
+	      		<div class="modal-header">
+	        		<h5 class="modal-title text-light" id="reply-form-label">Reply to Thread#{{ thread.key }}</h5>
+	        		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          			<span aria-hidden="true">&times;</span>
+	        		</button>
+	      		</div>
+				<form action="{% url 'post-reply' %}?t={{ thread.key }}" method="POST">
+					{% csrf_token %}
+		      		<div class="modal-body">
+						<div class="row p-2">
+							<p class="col-3">Content:</p>
+		        			<div class="col">
+								{{ reply_form.content }}
+							</div>
+						</div>
+						<div class="row p-2">
+							<p class="col-3">File (Optional):</p>
+							<div class="col">
+								{{ reply_form.file }}
+							</div>
+						</div>
+		      		</div>
+		      		<div class="modal-footer">
+		        		<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+		        		<button type="submit" class="btn btn-warning">Reply</button>
+		      		</div>
+				</form>
+	    	</div>
+	  	</div>
+	</div>
 </main>
 
 {% endblock %}

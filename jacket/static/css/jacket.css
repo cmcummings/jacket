@@ -1,3 +1,7 @@
+html {
+	scroll-behavior: smooth;
+}
+
 #auth-main {
 	position: absolute;
 	/* border-right: 2px solid white;
@@ -11,10 +15,21 @@
 	margin-left: -200px;
 }
 
+#id_content {
+	background-color: #111;
+	color: white;
+}
+
+#id_file {
+	background-color: #111;
+	color: white;
+}
+
 .pre-style {
 	font-family: sans-serif;
 	font-size: 13px;
-	word-wrap:break-word;
+	word-wrap: break-word;
+	white-space: pre-wrap;
 }
 
 .box-a:hover {

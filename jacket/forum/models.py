@@ -17,7 +17,7 @@ class Thread(models.Model):
 	date = models.DateTimeField(default=timezone.now)
 	content = models.TextField(max_length=1000)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
-	file = models.FileField(blank=True)
+	file = models.ImageField(upload_to="uploads/", blank=True)
 
 class Reply(models.Model):
 	key = models.CharField(max_length=10, default=gen_key, unique=True)
@@ -25,4 +25,4 @@ class Reply(models.Model):
 	date = models.DateTimeField(default=timezone.now)
 	content = models.TextField(max_length=1000)
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
-	file = models.FileField(blank=True)
+	file = models.ImageField(upload_to="uploads/", blank=True)

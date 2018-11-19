@@ -74,7 +74,9 @@
 			</div>
 			<div class="col">
 				<div class="d-inline-block border-bottom border-light-grey mb-2">
-					<p class="text-secondary mb-2">{{ reply.date }}</p>
+					<p class="text-secondary mb-2">
+						<a class="text-warning" href="#{{ reply.key }}">#</a> {{ reply.date }}
+					</p>
 				</div>
 				<pre class="text-light pre-style">{{ reply.content }}</pre>
 				{% if reply.file %}

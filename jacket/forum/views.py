@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 from general.views import load_user_context, check_login, load_staff_list_context
 from .models import Subforum, Thread, Reply
 from .forms import ReplyForm, ThreadForm
@@ -148,15 +149,16 @@ def post_reply(request):
 		return redirect('home')
 
 	if request.POST:
-		reply = ReplyForm(request)
+		reply = ReplyForm(request.POST)
 		thread_key = request.GET.get('t')
 
-		if reply.is_valid:
-
-
-			print('ok')
+		if reply.is_valid():
+			reply = reply.save(commit=False)
+			reply.thread = Thread.objects.get(key=thread_key)
+			reply.author = User.objects.get(id=request.session['user_id'])
+			reply = reply.save()
 			response = redirect('thread')
-			response['Location'] += '?t=' + thread_key
+			response['Location'] += '?t=' + thread_key + "#" + reply.key
 			return response
 
 	return redirect('forum')

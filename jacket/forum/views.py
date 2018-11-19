@@ -61,10 +61,8 @@ def subforum(request):
 					'username': thread.author.username,
 				}
 			}
-		context['subforum'] = {
-			'name': subforum.name,
-			'description': subforum.description
-		}
+		context['subforum'] = subforum.__dict__
+		context['thread_form'] = ThreadForm()
 	except Subforum.DoesNotExist:
 		# Redirect to forum is sub requested does not exist
 		return redirect('forum')
@@ -142,7 +140,19 @@ def post_thread(request):
 		return redirect('home')
 
 	if request.POST:
-		print('ok')
+		thread = ThreadForm(request.POST)
+		subforum_key = request.GET.get('s')
+
+		if thread.is_valid():
+			thread = thread.save(commit=False)
+			thread.subforum = Subforum.objects.get(key=subforum_key)
+			thread.author = User.objects.get(id=request.session['user_id'])
+			thread.save()
+			response = redirect('thread')
+			response['Location'] += '?t=' + thread.key
+			return response
+
+	return redirect('forum')
 
 def post_reply(request):
 	if not check_login(request):
@@ -156,9 +166,9 @@ def post_reply(request):
 			reply = reply.save(commit=False)
 			reply.thread = Thread.objects.get(key=thread_key)
 			reply.author = User.objects.get(id=request.session['user_id'])
-			reply = reply.save()
+			reply.save()
 			response = redirect('thread')
-			response['Location'] += '?t=' + thread_key # + "#" + reply.key
+			response['Location'] += '?t=' + thread_key + "#" + reply.key
 			return response
 
 	return redirect('forum')

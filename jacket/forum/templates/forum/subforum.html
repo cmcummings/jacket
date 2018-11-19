@@ -36,6 +36,9 @@
 			<div class="bg-ap-dark border border-grey p-3">
 				<h2 class="text-warning text-center underline">{{ subforum.name }}</h2>
 				<p class="text-light text-center">{{ subforum.description }}</p>
+				<p class="text-center">
+					[<a class="text-warning" href="#reply-form" data-toggle="modal" data-target="#thread-form">New Thread</a>]
+				</p>
 				<h5 class="text-light underline">Site Staff</h5>
 				<ul>
 					{% for id, username in staff.items %}
@@ -47,7 +50,46 @@
 			</div>
 		</div>
 	</div>
-
+	<!-- Reply Form Modal -->
+	<div class="modal fade" id="thread-form" tabindex="-1" role="dialog" aria-labelledby="thread-form-label" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-light" id="Thread-form-label">Create New Thread in {{ subforum.name }}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form action="{% url 'post-thread' %}?s={{ subforum.key }}" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="modal-body">
+						<div class="row p-2">
+							<p class="col-3">Title:</p>
+							<div class="col">
+								{{ thread_form.title }}
+							</div>
+						</div>
+						<div class="row p-2">
+							<p class="col-3">Content:</p>
+							<div class="col">
+								{{ thread_form.content }}
+							</div>
+						</div>
+						<div class="row p-2">
+							<p class="col-3">File (Optional):</p>
+							<div class="col">
+								{{ thread_form.file }}
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+						<button type="submit" class="btn btn-warning">Post</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </main>
 
 {% endblock %}

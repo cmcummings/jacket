@@ -15,12 +15,7 @@ html {
 	margin-left: -200px;
 }
 
-#id_content {
-	background-color: #111;
-	color: white;
-}
-
-#id_file {
+#id_content, #id_file, #id_title {
 	background-color: #111;
 	color: white;
 }

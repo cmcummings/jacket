@@ -158,7 +158,7 @@ def post_reply(request):
 			reply.author = User.objects.get(id=request.session['user_id'])
 			reply = reply.save()
 			response = redirect('thread')
-			response['Location'] += '?t=' + thread_key + "#" + reply.key
+			response['Location'] += '?t=' + thread_key # + "#" + reply.key
 			return response
 
 	return redirect('forum')
